@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sigmar+One&display=swap" rel="stylesheet">
 
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -116,14 +118,13 @@
         .minecraft-particle { width: 4px; height: 4px; position: absolute; background-color: rgba(213, 205, 199, 0.7); border-radius: 50%; animation: float 15s infinite ease-in-out; box-shadow: 0 0 5px rgba(213, 205, 199, 0.7); }
         .end-particle { position: absolute; width: 6px; height: 6px; background-color: #7e1e3c; border-radius: 50%; box-shadow: 0 0 10px #7e1e3c; animation: endParticle 4s infinite ease-out; opacity: 0; }
         
-        /* --- CÓDIGO MODIFICADO PARA EL EFECTO POP --- */
         .card {
             background-color: rgba(39, 21, 34, 0.7);
             border: 2px solid rgba(126, 30, 60, 0.3);
             border-radius: 8px;
             backdrop-filter: blur(5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            transition: all 0.2s ease-out; /* <-- Transición más rápida */
+            transition: all 0.2s ease-out; 
             overflow: hidden;
         }
         .card::before { 
@@ -140,12 +141,11 @@
         }
         
         .card:hover { 
-            transform: scale(1.12); /* <-- "Pop in" más grande */
+            transform: scale(1.12);
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.75); 
             border-color: rgba(126, 30, 60, 0.8);
-            z-index: 10; /* <-- Asegura que se ponga por encima */
+            z-index: 10;
         }
-        /* --- FIN DEL CÓDIGO MODIFICADO --- */
         
         .glow-text { text-shadow: 0 0 5px currentColor, 0 0 10px rgba(213, 205, 199, 0.3); animation: glow 3s infinite ease-in-out; }
         .section-title { position: relative; display: inline-block; padding-bottom: 10px; }
@@ -268,6 +268,7 @@
     </div>
 
     <script>
+        // --- El Script no necesita cambios ---
         const eventTimestamp = 1726358400;
 
         function createElements() {
