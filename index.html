@@ -8,27 +8,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sigmar+One&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --dark: #000000; 
-            --light: #d5cdc7; 
+            --primary: #8932b8;
+            --secondary: #5d3fd3;
+            --accent: #ffd54f;
+            --dark: #000000;
+            --light: #d5cdc7;
         }
 
+        /* --- ESTILOS PARA EL VIDEO DE FONDO --- */
         #video-background {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            min-width: 100vw;
-            min-height: 100vh;
+            min-width: 100%;
+            min-height: 100%;
             width: auto;
             height: auto;
             z-index: -2;
             object-fit: cover;
         }
 
+        /* Overlay oscuro sobre el video para mejorar legibilidad del texto */
         body::after {
             content: '';
             position: fixed;
@@ -39,10 +44,14 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: -1;
         }
-        
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Animaciones */
+        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.7; } }
+        @keyframes glow { 0% { filter: drop-shadow(0 0 3px rgba(137, 50, 184, 0.6)); } 50% { filter: drop-shadow(0 0 8px rgba(137, 50, 184, 0.9)); } 100% { filter: drop-shadow(0 0 3px rgba(137, 50, 184, 0.6)); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
+        @keyframes endParticle { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: translateY(-100px) translateX(var(--x-move)); opacity: 0; } }
 
         @keyframes uniform-levitate {
             0% { transform: translateY(0px); }
@@ -52,85 +61,115 @@
         .levitate-animation {
             animation: uniform-levitate 4s ease-in-out infinite;
         }
-        
+
+        /* ESTILOS PRINCIPALES Y FUENTE */
         body {
             font-family: 'Sigmar One', cursive;
-            background-color: var(--dark);
+            background-color: var(--dark); /* Color de respaldo si el video no carga */
             color: var(--light);
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
         .title-font {
             font-family: 'Press Start 2P', cursive;
             letter-spacing: 1px;
         }
-        
-        .minecraft-btn { background-color: #4a4a4a; border: 3px solid #000; border-bottom: 6px solid #000; color: white; padding: 12px 24px; font-family: 'Press Start 2P', cursive; font-size: 1.2rem; cursor: pointer; position: relative; transition: all 0.2s; text-shadow: 2px 2px 0px rgba(0,0,0,0.5); box-shadow: 0 6px 10px rgba(0,0,0,0.3); display: inline-block; text-align: center; }
+
+        /* OTROS ESTILOS */
+        .minecraft-btn { background-color: #4a4a4a; border: 3px solid #000; border-bottom: 6px solid #000; color: white; padding: 12px 24px; font-family: 'Press Start 2P', cursive; font-size: 1.2rem; cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s; text-shadow: 2px 2px 0px rgba(0,0,0,0.5); box-shadow: 0 6px 10px rgba(0,0,0,0.3); display: inline-block; text-align: center; }
         .minecraft-btn:hover { background-color: #544c50; }
         .minecraft-btn:active { background-color: #271522; transform: translateY(4px); border-bottom: 2px solid #000; }
+        .minecraft-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(213, 205, 199, 0.1), transparent); transition: 0.5s; }
+        .minecraft-btn:hover::before { left: 100%; }
+        .minecraft-block { width: 60px; height: 60px; position: absolute; background-size: cover; animation: float 12s infinite ease-in-out; border-radius: 4px; box-shadow: 0 0 20px rgba(126, 30, 60, 0.4); }
+        .minecraft-particle { width: 4px; height: 4px; position: absolute; background-color: rgba(213, 205, 199, 0.7); border-radius: 50%; animation: float 15s infinite ease-in-out; box-shadow: 0 0 5px rgba(213, 205, 199, 0.7); }
+        .end-particle { position: absolute; width: 6px; height: 6px; background-color: #7e1e3c; border-radius: 50%; box-shadow: 0 0 10px #7e1e3c; animation: endParticle 4s infinite ease-out; opacity: 0; }
+        .card { background-color: rgba(39, 21, 34, 0.7); border: 2px solid rgba(126, 30, 60, 0.3); border-radius: 8px; backdrop-filter: blur(5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: all 0.3s ease-in-out; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent, rgba(126, 30, 60, 0.1), transparent); background-size: 200% 100%; animation: shimmer 3s infinite linear; z-index: -1; }
         
-        .card { background-color: rgba(39, 21, 34, 0.7); border: 2px solid rgba(126, 30, 60, 0.3); border-radius: 8px; backdrop-filter: blur(5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: all 0.3s ease-in-out; }
-        .card:hover { transform: translateY(-10px) scale(1.08); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.75); border-color: rgba(126, 30, 60, 0.8); }
+        .card:hover { 
+            transform: translateY(-10px) scale(1.08); 
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.75); 
+            border-color: rgba(126, 30, 60, 0.8);
+        }
         
+        .glow-text { text-shadow: 0 0 5px currentColor, 0 0 10px rgba(213, 205, 199, 0.3); animation: glow 3s infinite ease-in-out; }
         .section-title { position: relative; display: inline-block; padding-bottom: 10px; }
         .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, currentColor, transparent); }
-
-        .minecraft-block { width: 60px; height: 60px; position: absolute; background-size: cover; animation: float 12s infinite ease-in-out; border-radius: 4px; box-shadow: 0 0 20px rgba(126, 30, 60, 0.4); }
+        .fade-in { animation: fadeIn 1s forwards; }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
         
-        .bubble-container { width: 144px; height: 144px; border-radius: 50%; background-color: #d5cdc7; border: 3px solid #7e1e3c; display: flex; justify-content: center; align-items: center; animation: pulse 3s infinite ease-in-out; filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); }
-        .prize-image { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; }
-
-        #music-toggle-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            width: 50px;
-            height: 50px;
-            padding: 0;
+        .bubble-container {
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            background-color: #d5cdc7;
+            border: 3px solid #7e1e3c;
             display: flex;
             justify-content: center;
             align-items: center;
+            animation: pulse 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
         }
-        #music-toggle-btn svg {
-            width: 28px;
-            height: 28px;
+        .prize-image {
+            width: 128px;
+            height: 128px;
+            object-fit: contain;
+            image-rendering: pixelated;
         }
     </style>
 </head>
 <body>
     <video autoplay muted loop playsinline id="video-background">
-        <source src="videos/video.mp4" type="video/mp4">
+        <source src="Videos/video.mp4" type="video/mp4">
         Tu navegador no soporta videos HTML5.
     </video>
 
-    <audio id="background-music" loop src="audio/audio.mp3"></audio>
+    <div id="particles-container"></div>
 
-    <div id="particles-container" class="absolute top-0 left-0 w-full h-full overflow-hidden"></div>
-
-    <div id="intro" class="fixed inset-0 flex flex-col items-center justify-center z-50 bg-black transition-opacity duration-1000">
-        <div class="space-y-4">
-            <p class="text-2xl md:text-4xl text-center mx-4 title-font">¿Suerte?</p>
-            <p class="text-2xl md:text-4xl text-center mx-4 title-font">¿Estrategia?</p>
-            <p class="text-xl md:text-3xl text-center mx-4 title-font">Solo uno saldrá con la tabla completa.</p>
+    <div id="intro" class="fixed inset-0 flex flex-col items-center justify-center z-50 bg-black">
+        <div id="intro-text-container" class="space-y-4">
+            <p class="text-2xl md:text-4xl text-center mx-4 title-font opacity-0">¿Suerte?</p>
+            <p class="text-2xl md:text-4xl text-center mx-4 title-font opacity-0">¿Estrategia?</p>
+            <p class="text-xl md:text-3xl text-center mx-4 title-font opacity-0">Solo uno saldrá con la tabla completa.</p>
         </div>
+        <div id="logo-container" class="mt-12 opacity-0"></div>
     </div>
 
-    <div id="main-content" class="container mx-auto px-4 py-16 opacity-0 transition-opacity duration-1000" style="max-width: 900px;">
-        <header class="text-center mb-16">
+    <div id="main-content" class="container mx-auto px-4 py-16 opacity-0" style="max-width: 900px;">
+        <header class="text-center mb-16 opacity-0">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-wider">
                 <img src="https://i.imgur.com/UCkSi5e.png" alt="Bingo Reforged" class="mx-auto levitate-animation" style="max-height: 210.25px;">
             </h1>
         </header>
         
-        <section class="mb-16 card p-8">
+        <section class="mb-16 card p-8 opacity-0 fade-in delay-1">
             <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">¿En qué consiste?</h2>
             <p class="text-xl md:text-2xl leading-relaxed">
                 Reúne recursos, completa desafíos y gana recompensas en una épica noche de Bingo dentro de Minecraft. 
                 Explora, combate y demuestra tus habilidades para ser el primero en completar tu tabla.
             </p>
+            <div class="mt-6 grid grid-cols-2 gap-4">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 mb-2 flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-full h-full"><rect x="2" y="2" width="20" height="20" fill="#544c50" rx="2" /><rect x="4" y="4" width="16" height="16" fill="#d4af37" rx="1" /><rect x="7" y="7" width="4" height="4" fill="#000000" /><rect x="13" y="7" width="4" height="4" fill="#000000" /><rect x="7" y="13" width="4" height="4" fill="#000000" /><rect x="13" y="13" width="4" height="4" fill="#000000" /></svg>
+                    </div>
+                    <p class="text-lg">Completa desafíos</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 mb-2 flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" class="w-full h-full"><rect x="2" y="2" width="20" height="20" fill="#544c50" rx="2" /><rect x="4" y="4" width="16" height="16" fill="#d4af37" rx="1" /><path d="M12 6L14 10L18 11L15 14L16 18L12 16L8 18L9 14L6 11L10 10L12 6Z" fill="#000000" /></svg>
+                    </div>
+                    <p class="text-lg">Gana puntos</p>
+                </div>
+            </div>
         </section>
         
-        <section class="mb-16 card p-8 text-center">
+        <section class="mb-16 card p-8 opacity-0 fade-in delay-2 text-center">
             <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Premio</h2>
             <div class="flex justify-center">
                 <div class="max-w-sm">
@@ -148,17 +187,17 @@
         </section>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <div class="card p-8 text-center">
+            <div class="card p-8 text-center opacity-0 fade-in delay-3">
                 <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Fecha</h2>
                 <p id="event-date" class="text-2xl" style="color: #d5cdc7;">Cargando...</p>
             </div>
-            <div class="card p-8 text-center">
+            <div class="card p-8 text-center opacity-0 fade-in delay-4">
                 <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Horario</h2>
                 <p id="event-time" class="text-2xl" style="color: #d5cdc7;">Cargando...</p>
             </div>
         </div>
         
-        <div class="text-center">
+        <div class="text-center opacity-0 fade-in delay-4">
             <button id="confirm-btn" class="minecraft-btn px-8 py-4" style="background-color: rgba(144, 238, 144, 0.6); border-color: rgba(144, 238, 144, 0.2);">
                 CONFIRMAR ASISTENCIA
             </button>
@@ -169,135 +208,173 @@
         </div>
     </div>
 
-    <button id="music-toggle-btn" class="minecraft-btn">
-        <svg id="icon-muted" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M7.168 2.366A1.88 1.88 0 005.62 3.881v12.238a1.88 1.88 0 002.77 1.639l8.44-6.118a1.88 1.88 0 000-3.278L8.39 2.242a1.88 1.88 0 00-1.222.124zM16 10a1 1 0 01-1-1V5a1 1 0 112 0v4a1 1 0 01-1 1zm-3-1a1 1 0 001 1v4a1 1 0 102 0v-4a1 1 0 00-1-1h-2z"/>
-            <path stroke="#000" stroke-width="1.5" d="M14.5 3.5l-4 13"/>
-        </svg>
-        <svg id="icon-unmuted" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="hidden">
-            <path d="M7.168 2.366A1.88 1.88 0 005.62 3.881v12.238a1.88 1.88 0 002.77 1.639l8.44-6.118a1.88 1.88 0 000-3.278L8.39 2.242a1.88 1.88 0 00-1.222.124zM16 10a1 1 0 01-1-1V5a1 1 0 112 0v4a1 1 0 01-1 1zm-3-1a1 1 0 001 1v4a1 1 0 102 0v-4a1 1 0 00-1-1h-2z"/>
-        </svg>
-    </button>
-
     <script>
-        const eventTimestamp = 1750291200;
+        const eventTimestamp = 1726358400;
 
+        // --- FUNCIÓN RESTAURADA ---
         function createElements() {
             const container = document.getElementById('particles-container');
-            const blocks = [ 'linear-gradient(135deg, #7e1e3c 0%, #544c50 100%)', 'linear-gradient(135deg, #271522 0%, #544c50 100%)' ];
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('end-particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.bottom = `${Math.random() * 20}%`;
+                particle.style.setProperty('--x-move', `${(Math.random() * 100) - 50}px`);
+                particle.style.animationDelay = `${Math.random() * 4}s`;
+                container.appendChild(particle);
+            }
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('minecraft-particle');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = `${Math.random() * 0.7 + 0.3}`;
+                star.style.animationDelay = `${Math.random() * 15}s`;
+                container.appendChild(star);
+            }
+            const blocks = [
+                'linear-gradient(135deg, #7e1e3c 0%, #544c50 100%)',
+                'linear-gradient(135deg, #271522 0%, #544c50 100%)',
+            ];
             for (let i = 0; i < 12; i++) {
                 const block = document.createElement('div');
-                block.className = 'minecraft-block';
+                block.classList.add('minecraft-block');
                 block.style.left = `${Math.random() * 100}%`;
                 block.style.top = `${Math.random() * 100}%`;
                 block.style.background = blocks[Math.floor(Math.random() * blocks.length)];
                 block.style.animationDelay = `${Math.random() * 8}s`;
+                block.style.animationDuration = `${8 + Math.random() * 10}s`;
+                block.style.opacity = `${Math.random() * 0.5 + 0.3}`;
+                block.style.transform = `rotate(${Math.random() * 360}deg)`;
                 container.appendChild(block);
             }
         }
 
+        // --- FUNCIÓN RESTAURADA ---
         function playIntroSequence() {
+            const textLines = document.querySelectorAll('#intro-text-container p');
             const intro = document.getElementById('intro');
             const mainContent = document.getElementById('main-content');
+            const header = document.querySelector('#main-content header');
+            
+            setTimeout(() => { textLines[0].classList.add('fade-in'); textLines[0].style.opacity = '1'; }, 500);
+            setTimeout(() => { textLines[1].classList.add('fade-in'); textLines[1].style.opacity = '1'; }, 1500);
+            setTimeout(() => { textLines[2].classList.add('fade-in'); textLines[2].style.opacity = '1'; }, 2500);
+            
             setTimeout(() => {
                 intro.style.opacity = '0';
+                intro.style.transition = 'opacity 1s ease-out';
+                
                 setTimeout(() => {
                     intro.style.display = 'none';
                     mainContent.style.opacity = '1';
-                }, 1000); // Espera a que la transición de opacidad termine
-            }, 3000); // Tiempo que dura la pantalla de intro
+                    mainContent.style.transition = 'opacity 1s ease-in';
+                    header.classList.add('opacity-100');
+                                        
+                    const sections = document.querySelectorAll('#main-content .fade-in');
+                    sections.forEach(section => {
+                        section.classList.add('opacity-100');
+                    });
+                }, 1000);
+            }, 4500);
         }
 
         function displayEventDates() {
             const eventDate = new Date(eventTimestamp * 1000);
-            const deadlineDate = new Date(eventDate.getTime() - (3 * 24 * 60 * 60 * 1000));
-            document.getElementById('event-date').innerText = new Intl.DateTimeFormat('es-VE', { weekday: 'long', day: 'numeric', month: 'long' }).format(eventDate);
-            document.getElementById('event-time').innerText = new Intl.DateTimeFormat('es-VE', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(eventDate);
-            document.getElementById('deadline-date').innerText = new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'long', year: 'numeric' }).format(deadlineDate);
+            const deadlineTimestamp = eventTimestamp - (3 * 24 * 60 * 60);
+            const deadlineDate = new Date(deadlineTimestamp * 1000);
+
+            if (isNaN(eventDate.getTime())) {
+                console.error("Timestamp del evento no es válido.");
+                document.getElementById('event-date').innerText = "Fecha no disponible";
+                document.getElementById('event-time').innerText = "Hora no disponible";
+                document.getElementById('deadline-date').innerText = "No disponible";
+                return;
+            }
+
+            const timeElement = document.getElementById('event-time');
+            const dateElement = document.getElementById('event-date');
+            const deadlineElement = document.getElementById('deadline-date');
+
+            if (timeElement) {
+                const timeOptions = { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
+                timeElement.innerText = eventDate.toLocaleTimeString('es-VE', timeOptions);
+            }
+            
+            if (dateElement) {
+                const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+                let dateString = eventDate.toLocaleDateString('es-VE', dateOptions);
+                dateElement.innerText = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+            }
+            
+            if (deadlineElement) {
+                const deadlineOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+                deadlineElement.innerText = deadlineDate.toLocaleDateString('es-VE', deadlineOptions);
+            }
         }
-        
-        // --- FUNCIÓN DEL MODAL RESTAURADA Y COMPLETA ---
+
         function setupConfirmationModal() {
             const confirmBtn = document.getElementById('confirm-btn');
-            if (!confirmBtn) return;
-
+            
             confirmBtn.addEventListener('click', () => {
                 window.open('https://forms.gle/Wh9Kr8tidnLGCX5i7', '_blank');
-                
-                // Evita crear modales duplicados
-                if (document.getElementById('confirmation-modal')) return;
+                const styleTagId = 'modal-dynamic-styles';
+                const btnStyle = document.createElement('style');
+                btnStyle.id = styleTagId;
+                btnStyle.innerHTML = `
+                        #close-btn:hover {
+                            background-color: rgba(212, 175, 55, 0.25) !important;
+                            border-color: rgba(212, 175, 55, 0.4) !important;
+                        }
+                        #close-btn:active {
+                            background-color: rgba(212, 175, 55, 0.5) !important;
+                            transform: translateY(4px) !important;
+                            border-bottom-width: 2px !important;
+                        }
+                    `;
+                document.head.appendChild(btnStyle);
 
                 const modal = document.createElement('div');
-                modal.id = 'confirmation-modal';
                 modal.className = 'fixed inset-0 flex items-center justify-center z-50 p-4';
-                modal.style.animation = 'fadeIn 0.3s ease-out';
                 
                 modal.innerHTML = `
-                    <div class="absolute inset-0 bg-black bg-opacity-70" id="modal-overlay"></div>
-                    <div class="card p-8 max-w-md w-full relative z-10 text-center">
-                        <div class="flex justify-center mb-4">
-                            <svg class="w-16 h-16" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="11" fill="rgb(144, 238, 144)" opacity="0.2" />
-                                <path d="M9 12l2 2 4-4" stroke="rgb(144, 238, 144)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                                <circle cx="12" cy="12" r="10" stroke="rgb(144, 238, 144)" stroke-width="1.5" fill="none" />
-                            </svg>
+                        <div class="absolute inset-0" id="modal-overlay"></div>
+                        <div class="card p-8 max-w-md w-full relative z-10 transform transition-all text-center" style="animation: fadeIn 0.3s ease-out;">
+                            <div class="flex justify-center mb-4">
+                                <svg class="w-16 h-16" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="11" fill="rgb(144, 238, 144)" opacity="0.2" />
+                                    <path d="M9 12l2 2 4-4" stroke="rgb(144, 238, 144)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="10" stroke="rgb(144, 238, 144)" stroke-width="1.5" fill="none" />
+                                </svg>
+                            </div>
+                            <h3 class="text-3xl mb-4" style="color: #d4af37;">¡Asistencia Confirmada!</h3>
+                            <p class="mb-6 text-lg" style="color: var(--light);">Gracias por registrarte. Te esperamos para una noche épica.</p>
+                            <button class="minecraft-btn px-6 py-3 text-sm" id="close-btn">CERRAR</button>
                         </div>
-                        <h3 class="text-3xl mb-4" style="color: #d4af37;">¡Asistencia Confirmada!</h3>
-                        <p class="mb-6 text-lg" style="color: var(--light);">Gracias por registrarte. Te esperamos.</p>
-                        <button class="minecraft-btn px-6 py-3 text-sm" id="close-btn">CERRAR</button>
-                    </div>
-                `;
+                    `;
                 
                 document.body.appendChild(modal);
 
                 const closeModal = () => {
-                    modal.remove();
+                    modal.style.opacity = '0';
+                    modal.style.transition = 'opacity 0.3s ease-out';
+                    setTimeout(() => modal.remove(), 300);
+                    const styleTag = document.getElementById(styleTagId);
+                    if (styleTag) {
+                        styleTag.remove();
+                    }
                 };
 
-                modal.querySelector('#close-btn').addEventListener('click', closeModal);
-                modal.querySelector('#modal-overlay').addEventListener('click', closeModal);
-            });
-        }
-
-        // --- FUNCIÓN DE MÚSICA CORREGIDA Y SIMPLIFICADA ---
-        function setupMusicControls() {
-            const audio = document.getElementById('background-music');
-            const toggleBtn = document.getElementById('music-toggle-btn');
-            const iconMuted = document.getElementById('icon-muted');
-            const iconUnmuted = document.getElementById('icon-unmuted');
-            
-            if (!audio || !toggleBtn || !iconMuted || !iconUnmuted) return;
-
-            // El audio empieza pausado. El botón muestra "silencio" por defecto.
-            iconMuted.classList.remove('hidden');
-            iconUnmuted.classList.add('hidden');
-            
-            toggleBtn.addEventListener('click', () => {
-                // Si el audio está pausado, es el primer clic del usuario.
-                if (audio.paused) {
-                    audio.play();
-                }
-                
-                // Alternar el estado de silencio (mute).
-                audio.muted = !audio.muted;
-
-                // Actualizar el icono según el estado de silencio.
-                if (audio.muted) {
-                    iconMuted.classList.remove('hidden');
-                    iconUnmuted.classList.add('hidden');
-                } else {
-                    iconMuted.classList.add('hidden');
-                    iconUnmuted.classList.remove('hidden');
-                }
+                document.getElementById('close-btn').addEventListener('click', closeModal);
+                document.getElementById('modal-overlay').addEventListener('click', closeModal);
             });
         }
 
         window.addEventListener('load', () => {
-            createElements();
+            createElements(); // Llamada restaurada para que las partículas funcionen
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
-            setupMusicControls();
         });
     </script>
 </body>
