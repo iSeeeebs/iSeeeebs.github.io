@@ -21,16 +21,16 @@
 
         /* --- ESTILOS PARA EL VIDEO DE FONDO --- */
         #video-background {
-            position: fixed; /* Lo fija en la pantalla para que no se mueva con el scroll */
+            position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Centra el video perfectamente */
+            transform: translate(-50%, -50%);
             min-width: 100%;
             min-height: 100%;
             width: auto;
             height: auto;
-            z-index: -2; /* Lo coloca detrás de todo el contenido */
-            object-fit: cover; /* Asegura que el video cubra toda la pantalla sin deformarse */
+            z-index: -2;
+            object-fit: cover;
         }
 
         /* Overlay oscuro sobre el video para mejorar legibilidad del texto */
@@ -41,8 +41,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Color negro con 50% de opacidad */
-            z-index: -1; /* Se coloca entre el video y el contenido */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
         }
         
         /* Animaciones */
@@ -211,13 +211,72 @@
     <script>
         const eventTimestamp = 1726358400;
 
+        // --- FUNCIÓN RESTAURADA ---
         function createElements() {
             const container = document.getElementById('particles-container');
-            // ... (resto de la función sin cambios)
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('end-particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.bottom = `${Math.random() * 20}%`;
+                particle.style.setProperty('--x-move', `${(Math.random() * 100) - 50}px`);
+                particle.style.animationDelay = `${Math.random() * 4}s`;
+                container.appendChild(particle);
+            }
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('minecraft-particle');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = `${Math.random() * 0.7 + 0.3}`;
+                star.style.animationDelay = `${Math.random() * 15}s`;
+                container.appendChild(star);
+            }
+            const blocks = [
+                'linear-gradient(135deg, #7e1e3c 0%, #544c50 100%)',
+                'linear-gradient(135deg, #271522 0%, #544c50 100%)',
+            ];
+            for (let i = 0; i < 12; i++) {
+                const block = document.createElement('div');
+                block.classList.add('minecraft-block');
+                block.style.left = `${Math.random() * 100}%`;
+                block.style.top = `${Math.random() * 100}%`;
+                block.style.background = blocks[Math.floor(Math.random() * blocks.length)];
+                block.style.animationDelay = `${Math.random() * 8}s`;
+                block.style.animationDuration = `${8 + Math.random() * 10}s`;
+                block.style.opacity = `${Math.random() * 0.5 + 0.3}`;
+                block.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(block);
+            }
         }
 
+        // --- FUNCIÓN RESTAURADA ---
         function playIntroSequence() {
-            // ... (resto de la función sin cambios)
+            const textLines = document.querySelectorAll('#intro-text-container p');
+            const intro = document.getElementById('intro');
+            const mainContent = document.getElementById('main-content');
+            const header = document.querySelector('#main-content header');
+            
+            setTimeout(() => { textLines[0].classList.add('fade-in'); textLines[0].style.opacity = '1'; }, 500);
+            setTimeout(() => { textLines[1].classList.add('fade-in'); textLines[1].style.opacity = '1'; }, 1500);
+            setTimeout(() => { textLines[2].classList.add('fade-in'); textLines[2].style.opacity = '1'; }, 2500);
+            
+            setTimeout(() => {
+                intro.style.opacity = '0';
+                intro.style.transition = 'opacity 1s ease-out';
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transition = 'opacity 1s ease-in';
+                    header.classList.add('opacity-100');
+                                        
+                    const sections = document.querySelectorAll('#main-content .fade-in');
+                    sections.forEach(section => {
+                        section.classList.add('opacity-100');
+                    });
+                }, 1000);
+            }, 4500);
         }
 
         function displayEventDates() {
@@ -312,7 +371,7 @@
         }
 
         window.addEventListener('load', () => {
-            // Se eliminó la llamada a createElements() que generaba las partículas de fondo
+            createElements(); // Llamada restaurada para que las partículas funcionen
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
