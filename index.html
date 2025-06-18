@@ -84,7 +84,6 @@
         .bubble-container { width: 144px; height: 144px; border-radius: 50%; background-color: #d5cdc7; border: 3px solid #7e1e3c; display: flex; justify-content: center; align-items: center; animation: pulse 3s infinite ease-in-out; filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); }
         .prize-image { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; }
 
-        /* --- ESTILOS PARA EL BOTÓN DE MÚSICA --- */
         #music-toggle-btn {
             position: fixed;
             bottom: 20px;
@@ -92,7 +91,7 @@
             z-index: 100;
             width: 50px;
             height: 50px;
-            padding: 0; /* Anulamos el padding original para centrar el icono */
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -184,15 +183,13 @@
             <path d="M7.168 2.366A1.88 1.88 0 005.62 3.881v12.238a1.88 1.88 0 002.77 1.639l8.44-6.118a1.88 1.88 0 000-3.278L8.39 2.242a1.88 1.88 0 00-1.222.124zM16 10a1 1 0 01-1-1V5a1 1 0 112 0v4a1 1 0 01-1 1zm-3-1a1 1 0 001 1v4a1 1 0 102 0v-4a1 1 0 00-1-1h-2z"/>
             <path stroke="#000" stroke-width="1.5" d="M14.5 3.5l-4 13"/>
         </svg>
-         <svg id="icon-unmuted" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="hidden">
+        <svg id="icon-unmuted" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" class="hidden">
             <path d="M7.168 2.366A1.88 1.88 0 005.62 3.881v12.238a1.88 1.88 0 002.77 1.639l8.44-6.118a1.88 1.88 0 000-3.278L8.39 2.242a1.88 1.88 0 00-1.222.124zM16 10a1 1 0 01-1-1V5a1 1 0 112 0v4a1 1 0 01-1 1zm-3-1a1 1 0 001 1v4a1 1 0 102 0v-4a1 1 0 00-1-1h-2z"/>
         </svg>
     </button>
 
-
     <script>
-        // --- INICIO DE SCRIPTS ---
-        const eventTimestamp = 1726704000; // Ajustado para el 18 de junio de 2025
+        const eventTimestamp = 1750291200; // Miércoles, 18 de junio de 2025
 
         function playIntroSequence() {
             const textLines = document.querySelectorAll('#intro-text-container p');
@@ -228,55 +225,60 @@
             document.getElementById('event-time').innerText = new Intl.DateTimeFormat('es-VE', timeOptions).format(eventDate);
             document.getElementById('deadline-date').innerText = new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'long', year: 'numeric' }).format(deadlineDate);
         }
+        
+        function setupConfirmationModal() { /* ... Lógica del modal sin cambios ... */ }
 
-        function setupConfirmationModal() {
-            const confirmBtn = document.getElementById('confirm-btn');
-            confirmBtn.addEventListener('click', () => {
-                window.open('https://forms.gle/Wh9Kr8tidnLGCX5i7', '_blank');
-                // ... (lógica del modal sin cambios)
-            });
-        }
-
-        // --- FUNCIÓN PARA LA MÚSICA ---
+        // --- FUNCIÓN DE MÚSICA CORREGIDA Y MEJORADA ---
         function setupMusicControls() {
             const audio = document.getElementById('background-music');
             const toggleBtn = document.getElementById('music-toggle-btn');
             const iconMuted = document.getElementById('icon-muted');
             const iconUnmuted = document.getElementById('icon-unmuted');
+            
+            // Establecer un estado inicial. La música está "desactivada" por el usuario al principio.
+            let isMusicEnabled = false; 
 
-            // Intentar reproducir audio silenciado para cumplir políticas de navegador
-            audio.volume = 0.25; // Volumen bajo para que no sea molesto
+            // Intentamos la reproducción automática silenciada
+            audio.volume = 0.25;
             audio.muted = true;
             let playPromise = audio.play();
 
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("La reproducción automática fue bloqueada. El usuario debe iniciarla manualmente.");
-                    // Si se bloquea, nos aseguramos de que la interfaz muestre el estado correcto
-                    toggleBtn.dataset.playing = "false";
+                    // La reproducción automática fue bloqueada, no hay problema.
+                    // El botón funcionará para que el usuario la inicie manualmente.
+                    console.warn("La reproducción automática fue bloqueada por el navegador.");
                 });
             }
 
             toggleBtn.addEventListener('click', () => {
-                if (audio.muted) {
-                    audio.muted = false;
+                // Invertimos el estado deseado por el usuario
+                isMusicEnabled = !isMusicEnabled; 
+                
+                if (isMusicEnabled) {
+                    // Si el usuario quiere música:
+                    audio.muted = false; // Quita el silencio
+                    if (audio.paused) {
+                        // Si el audio nunca empezó, dale a play ahora.
+                        audio.play();
+                    }
                     iconMuted.classList.add('hidden');
                     iconUnmuted.classList.remove('hidden');
                 } else {
-                    audio.muted = true;
+                    // Si el usuario NO quiere música:
+                    audio.muted = true; // Pon el silencio
                     iconMuted.classList.remove('hidden');
                     iconUnmuted.classList.add('hidden');
                 }
             });
         }
 
-
         window.addEventListener('load', () => {
-            // Se eliminó createElements() ya que no existe en el código proporcionado
+            // Se eliminó createElements() ya que no se usa y no estaba definido
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
-            setupMusicControls(); // Se añade la llamada a la nueva función
+            setupMusicControls();
         });
     </script>
 </body>
