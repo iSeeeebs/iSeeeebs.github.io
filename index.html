@@ -9,7 +9,108 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sigmar+One&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #8932b8;
+            --secondary: #5d3fd3;
+            --accent: #ffd54f;
+            --dark: #000000; 
+            --light: #d5cdc7; 
+        }
+        
+        /* Animaciones */
+        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.7; } }
+        @keyframes glow { 0% { filter: drop-shadow(0 0 3px rgba(137, 50, 184, 0.6)); } 50% { filter: drop-shadow(0 0 8px rgba(137, 50, 184, 0.9)); } 100% { filter: drop-shadow(0 0 3px rgba(137, 50, 184, 0.6)); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
+        @keyframes endParticle { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: translateY(-100px) translateX(var(--x-move)); opacity: 0; } }
+
+        @keyframes uniform-levitate {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .levitate-animation {
+            animation: uniform-levitate 4s ease-in-out infinite;
+        }
+        
+        /* ESTILOS PRINCIPALES Y FUENTE */
+        body {
+            font-family: 'Sigmar One', cursive;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        .title-font {
+            font-family: 'Press Start 2P', cursive;
+            letter-spacing: 1px;
+        }
+        
+        /* FONDO */
+        .end-background {
+            background-color: var(--dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(126, 30, 60, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(84, 76, 80, 0.2) 0%, transparent 50%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            z-index: -2;
+        }
+
+        /* OTROS ESTILOS */
+        .minecraft-btn { background-color: #4a4a4a; border: 3px solid #000; border-bottom: 6px solid #000; color: white; padding: 12px 24px; font-family: 'Press Start 2P', cursive; font-size: 1.2rem; cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s; text-shadow: 2px 2px 0px rgba(0,0,0,0.5); box-shadow: 0 6px 10px rgba(0,0,0,0.3); display: inline-block; text-align: center; }
+        .minecraft-btn:hover { background-color: #544c50; }
+        .minecraft-btn:active { background-color: #271522; transform: translateY(4px); border-bottom: 2px solid #000; }
+        .minecraft-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(213, 205, 199, 0.1), transparent); transition: 0.5s; }
+        .minecraft-btn:hover::before { left: 100%; }
+        .end-portal-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%237e1e3c' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.3; z-index: -1; }
+        .minecraft-block { width: 60px; height: 60px; position: absolute; background-size: cover; animation: float 12s infinite ease-in-out; border-radius: 4px; box-shadow: 0 0 20px rgba(126, 30, 60, 0.4); }
+        .minecraft-particle { width: 4px; height: 4px; position: absolute; background-color: rgba(213, 205, 199, 0.7); border-radius: 50%; animation: float 15s infinite ease-in-out; box-shadow: 0 0 5px rgba(213, 205, 199, 0.7); }
+        .end-particle { position: absolute; width: 6px; height: 6px; background-color: #7e1e3c; border-radius: 50%; box-shadow: 0 0 10px #7e1e3c; animation: endParticle 4s infinite ease-out; opacity: 0; }
+        .card { background-color: rgba(39, 21, 34, 0.7); border: 2px solid rgba(126, 30, 60, 0.3); border-radius: 8px; backdrop-filter: blur(5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: all 0.3s ease; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent, rgba(126, 30, 60, 0.1), transparent); background-size: 200% 100%; animation: shimmer 3s infinite linear; z-index: -1; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); border-color: rgba(126, 30, 60, 0.6); }
+        .prize-card { position: relative; overflow: hidden; transition: all 0.3s ease; }
+        .prize-card:hover { transform: translateY(-5px) scale(1.03); }
+        .prize-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(213, 205, 199, 0.1), transparent); transform: rotate(45deg); animation: shimmer 3s infinite linear; }
+        .glow-text { text-shadow: 0 0 5px currentColor, 0 0 10px rgba(213, 205, 199, 0.3); animation: glow 3s infinite ease-in-out; }
+        .section-title { position: relative; display: inline-block; padding-bottom: 10px; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, currentColor, transparent); }
+        .fade-in { animation: fadeIn 1s forwards; }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .custom-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3; background-size: cover; background-position: center; opacity: 0.2; }
+        
+        /* ===== ESTILOS DE LA BURBUJA MODIFICADOS ===== */
+        .bubble-container {
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            background-color: #d5cdc7; /* Color de fondo claro */
+            border: 3px solid #7e1e3c; /* Borde de color vino */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); /* Sombra oscura */
+        }
+        .prize-image {
+            width: 128px;
+            height: 128px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+    </style>
 </head>
 <body>
     <div class="custom-bg" style="background-image: url('https://i.imgur.com/your-background-image.jpg');"></div>
@@ -25,8 +126,7 @@
         </div>
         <div id="logo-container" class="mt-12 opacity-0"></div>
     </div>
-
-    <div id="main-content" class="container mx-auto px-4 py-16 opacity-0" style="max-width: 900px;">
+<div id="main-content" class="container mx-auto px-4 py-16 opacity-0" style="max-width: 900px;">
         <header class="text-center mb-16 opacity-0">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-wider">
                 <img src="https://i.imgur.com/UCkSi5e.png" alt="Bingo Reforged" class="mx-auto levitate-animation" style="max-height: 210.25px;">
@@ -101,7 +201,77 @@
             <p class="mt-4 text-sm" style="color: #7f7171;">¡Plazas limitadas! Confirma tu asistencia</p>
         </div>
     </div>
+<script>
+        function createElements() {
+            const container = document.getElementById('particles-container');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('end-particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.bottom = `${Math.random() * 20}%`;
+                particle.style.setProperty('--x-move', `${(Math.random() * 100) - 50}px`);
+                particle.style.animationDelay = `${Math.random() * 4}s`;
+                container.appendChild(particle);
+            }
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('minecraft-particle');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = `${Math.random() * 0.7 + 0.3}`;
+                star.style.animationDelay = `${Math.random() * 15}s`;
+                container.appendChild(star);
+            }
+            const blocks = [
+                'linear-gradient(135deg, #7e1e3c 0%, #544c50 100%)',
+                'linear-gradient(135deg, #271522 0%, #544c50 100%)',
+            ];
+            for (let i = 0; i < 12; i++) {
+                const block = document.createElement('div');
+                block.classList.add('minecraft-block');
+                block.style.left = `${Math.random() * 100}%`;
+                block.style.top = `${Math.random() * 100}%`;
+                block.style.background = blocks[Math.floor(Math.random() * blocks.length)];
+                block.style.animationDelay = `${Math.random() * 8}s`;
+                block.style.animationDuration = `${8 + Math.random() * 10}s`;
+                block.style.opacity = `${Math.random() * 0.5 + 0.3}`;
+                block.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(block);
+            }
+        }
 
-    <script src="script.js"></script>
+        function playIntroSequence() {
+            const textLines = document.querySelectorAll('#intro-text-container p');
+            const intro = document.getElementById('intro');
+            const mainContent = document.getElementById('main-content');
+            const header = document.querySelector('#main-content header');
+            
+            setTimeout(() => { textLines[0].classList.add('fade-in'); textLines[0].style.opacity = '1'; }, 500);
+            setTimeout(() => { textLines[1].classList.add('fade-in'); textLines[1].style.opacity = '1'; }, 1500);
+            setTimeout(() => { textLines[2].classList.add('fade-in'); textLines[2].style.opacity = '1'; }, 2500);
+            
+            setTimeout(() => {
+                intro.style.opacity = '0';
+                intro.style.transition = 'opacity 1s ease-out';
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transition = 'opacity 1s ease-in';
+                    header.classList.add('opacity-100');
+                                        
+                    const sections = document.querySelectorAll('#main-content .fade-in');
+                    sections.forEach(section => {
+                        section.classList.add('opacity-100');
+                    });
+                }, 1000);
+            }, 4500);
+        }
+
+        window.addEventListener('load', () => {
+            createElements();
+            playIntroSequence();
+        });
+    </script>
 </body>
 </html>
