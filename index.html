@@ -45,17 +45,27 @@
             z-index: -1;
         }
 
-        /* --- CÓDIGO NUEVO: ESTILOS PARA EL BOTÓN DE AUDIO --- */
+        /* --- CÓDIGO MODIFICADO: ESTILOS PARA EL BOTÓN DE AUDIO --- */
         #audio-control-button {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            transition: all 0.3s; /* Transición para todos los cambios */
+            
+            /* Colores nuevos */
+            background-color: rgba(212, 175, 55, 0.6); /* Amarillo de los títulos con 60% de opacidad */
+            border-color: rgba(212, 175, 55, 0.9);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
         }
+
         #audio-control-button:hover {
-            opacity: 1;
+            background-color: rgba(212, 175, 55, 0.8); /* Más opaco al pasar el mouse */
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); /* Agregamos un brillo */
+        }
+        
+        #audio-control-button:active {
+            background-color: rgba(212, 175, 55, 1); /* Sólido al hacer clic */
         }
 
         /* Animaciones */
@@ -230,7 +240,6 @@
     <script>
         const eventTimestamp = 1726358400;
 
-        // --- FUNCIÓN RESTAURADA ---
         function createElements() {
             const container = document.getElementById('particles-container');
             for (let i = 0; i < 50; i++) {
@@ -269,7 +278,6 @@
             }
         }
 
-        // --- FUNCIÓN RESTAURADA ---
         function playIntroSequence() {
             const textLines = document.querySelectorAll('#intro-text-container p');
             const intro = document.getElementById('intro');
@@ -389,13 +397,11 @@
             });
         }
         
-        // --- CÓDIGO NUEVO: FUNCIÓN PARA CONTROLAR EL AUDIO ---
         function setupAudioControls() {
             const audio = document.getElementById('background-audio');
             const audioButton = document.getElementById('audio-control-button');
             let isPlaying = false;
 
-            // Inicia el audio con un volumen bajo para no ser intrusivo
             audio.volume = 0.3;
 
             audioButton.addEventListener('click', () => {
@@ -409,22 +415,18 @@
                 isPlaying = !isPlaying;
             });
             
-            // Un pequeño truco: intentamos reproducir el audio automáticamente después de la intro.
-            // Si el navegador lo permite, genial. Si no, el usuario aún tiene el botón.
             setTimeout(() => {
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // El audio comenzó a sonar automáticamente
                         isPlaying = true;
                         audioButton.textContent = "Música ON";
                     }).catch(error => {
-                        // El navegador bloqueó la reproducción. El usuario deberá hacer clic.
                         console.log("La reproducción automática fue bloqueada. El usuario debe iniciar el audio manualmente.");
                         audioButton.textContent = "Música";
                     });
                 }
-            }, 5000); // Se intenta 5 segundos después de cargar la página
+            }, 5000);
         }
 
         window.addEventListener('load', () => {
@@ -432,7 +434,7 @@
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
-            setupAudioControls(); // <-- CÓDIGO NUEVO: Se llama a la función del audio
+            setupAudioControls();
         });
     </script>
 </body>
