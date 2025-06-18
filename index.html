@@ -45,6 +45,19 @@
             z-index: -1;
         }
 
+        /* --- CÓDIGO NUEVO: ESTILOS PARA EL BOTÓN DE AUDIO --- */
+        #audio-control-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        #audio-control-button:hover {
+            opacity: 1;
+        }
+
         /* Animaciones */
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.7; } }
@@ -124,6 +137,8 @@
     </style>
 </head>
 <body>
+    <audio id="background-audio" src="audio/musica-fondo.mp3" loop></audio>
+
     <video autoplay muted loop playsinline id="video-background">
         <source src="videos/video.mp4" type="video/mp4">
         Tu navegador no soporta videos HTML5.
@@ -139,6 +154,10 @@
         </div>
         <div id="logo-container" class="mt-12 opacity-0"></div>
     </div>
+    
+    <button id="audio-control-button" class="minecraft-btn" style="font-size: 0.8rem; padding: 8px 12px;">
+        Música
+    </button>
 
     <div id="main-content" class="container mx-auto px-4 py-16 opacity-0" style="max-width: 900px;">
         <header class="text-center mb-16 opacity-0">
@@ -369,12 +388,51 @@
                 document.getElementById('modal-overlay').addEventListener('click', closeModal);
             });
         }
+        
+        // --- CÓDIGO NUEVO: FUNCIÓN PARA CONTROLAR EL AUDIO ---
+        function setupAudioControls() {
+            const audio = document.getElementById('background-audio');
+            const audioButton = document.getElementById('audio-control-button');
+            let isPlaying = false;
+
+            // Inicia el audio con un volumen bajo para no ser intrusivo
+            audio.volume = 0.3;
+
+            audioButton.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    audioButton.textContent = "Música OFF";
+                } else {
+                    audio.play();
+                    audioButton.textContent = "Música ON";
+                }
+                isPlaying = !isPlaying;
+            });
+            
+            // Un pequeño truco: intentamos reproducir el audio automáticamente después de la intro.
+            // Si el navegador lo permite, genial. Si no, el usuario aún tiene el botón.
+            setTimeout(() => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // El audio comenzó a sonar automáticamente
+                        isPlaying = true;
+                        audioButton.textContent = "Música ON";
+                    }).catch(error => {
+                        // El navegador bloqueó la reproducción. El usuario deberá hacer clic.
+                        console.log("La reproducción automática fue bloqueada. El usuario debe iniciar el audio manualmente.");
+                        audioButton.textContent = "Música";
+                    });
+                }
+            }, 5000); // Se intenta 5 segundos después de cargar la página
+        }
 
         window.addEventListener('load', () => {
-            createElements(); // Llamada restaurada para que las partículas funcionen
+            createElements(); 
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
+            setupAudioControls(); // <-- CÓDIGO NUEVO: Se llama a la función del audio
         });
     </script>
 </body>
