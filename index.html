@@ -47,6 +47,7 @@
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.7; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes shimmer { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }
+        @keyframes endParticle { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: translateY(-100px) translateX(var(--x-move)); opacity: 0; } }
 
         @keyframes uniform-levitate {
             0% { transform: translateY(0px); }
@@ -81,6 +82,9 @@
         .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, currentColor, transparent); }
         .fade-in { animation: fadeIn 1s forwards; }
 
+        .minecraft-block { width: 60px; height: 60px; position: absolute; background-size: cover; animation: float 12s infinite ease-in-out; border-radius: 4px; box-shadow: 0 0 20px rgba(126, 30, 60, 0.4); }
+        .minecraft-particle { width: 4px; height: 4px; position: absolute; background-color: rgba(213, 205, 199, 0.7); border-radius: 50%; animation: float 15s infinite ease-in-out; box-shadow: 0 0 5px rgba(213, 205, 199, 0.7); }
+        
         .bubble-container { width: 144px; height: 144px; border-radius: 50%; background-color: #d5cdc7; border: 3px solid #7e1e3c; display: flex; justify-content: center; align-items: center; animation: pulse 3s infinite ease-in-out; filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)); }
         .prize-image { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; }
 
@@ -101,7 +105,6 @@
             height: 28px;
             stroke-width: 1.5;
         }
-
     </style>
 </head>
 <body>
@@ -125,13 +128,13 @@
     </div>
 
     <div id="main-content" class="container mx-auto px-4 py-16 opacity-0" style="max-width: 900px;">
-        <header class="text-center mb-16 opacity-0">
+        <header class="text-center mb-16">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-wider">
                 <img src="https://i.imgur.com/UCkSi5e.png" alt="Bingo Reforged" class="mx-auto levitate-animation" style="max-height: 210.25px;">
             </h1>
         </header>
         
-        <section class="mb-16 card p-8 opacity-0 fade-in delay-1">
+        <section class="mb-16 card p-8">
             <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">¿En qué consiste?</h2>
             <p class="text-xl md:text-2xl leading-relaxed">
                 Reúne recursos, completa desafíos y gana recompensas en una épica noche de Bingo dentro de Minecraft. 
@@ -139,7 +142,7 @@
             </p>
         </section>
         
-        <section class="mb-16 card p-8 opacity-0 fade-in delay-2 text-center">
+        <section class="mb-16 card p-8 text-center">
             <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Premio</h2>
             <div class="flex justify-center">
                 <div class="max-w-sm">
@@ -157,17 +160,17 @@
         </section>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <div class="card p-8 text-center opacity-0 fade-in delay-3">
+            <div class="card p-8 text-center">
                 <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Fecha</h2>
                 <p id="event-date" class="text-2xl" style="color: #d5cdc7;">Cargando...</p>
             </div>
-            <div class="card p-8 text-center opacity-0 fade-in delay-4">
+            <div class="card p-8 text-center">
                 <h2 class="text-3xl mb-6 section-title" style="color: #d4af37;">Horario</h2>
                 <p id="event-time" class="text-2xl" style="color: #d5cdc7;">Cargando...</p>
             </div>
         </div>
         
-        <div class="text-center opacity-0 fade-in delay-4">
+        <div class="text-center">
             <button id="confirm-btn" class="minecraft-btn px-8 py-4" style="background-color: rgba(144, 238, 144, 0.6); border-color: rgba(144, 238, 144, 0.2);">
                 CONFIRMAR ASISTENCIA
             </button>
@@ -189,92 +192,123 @@
     </button>
 
     <script>
-        const eventTimestamp = 1750291200; // Miércoles, 18 de junio de 2025
+        const eventTimestamp = 1750291200;
+
+        function createElements() {
+            const container = document.getElementById('particles-container');
+            const blocks = [
+                'linear-gradient(135deg, #7e1e3c 0%, #544c50 100%)',
+                'linear-gradient(135deg, #271522 0%, #544c50 100%)',
+            ];
+            for (let i = 0; i < 12; i++) {
+                const block = document.createElement('div');
+                block.className = 'minecraft-block absolute';
+                block.style.left = `${Math.random() * 100}%`;
+                block.style.top = `${Math.random() * 100}%`;
+                block.style.background = blocks[Math.floor(Math.random() * blocks.length)];
+                block.style.animationDelay = `${Math.random() * 8}s`;
+                block.style.animationDuration = `${8 + Math.random() * 10}s`;
+                block.style.opacity = `${Math.random() * 0.5 + 0.3}`;
+                block.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(block);
+            }
+        }
 
         function playIntroSequence() {
-            const textLines = document.querySelectorAll('#intro-text-container p');
             const intro = document.getElementById('intro');
             const mainContent = document.getElementById('main-content');
             
-            setTimeout(() => { textLines[0].style.opacity = '1'; }, 500);
-            setTimeout(() => { textLines[1].style.opacity = '1'; }, 1500);
-            setTimeout(() => { textLines[2].style.opacity = '1'; }, 2500);
-            
             setTimeout(() => {
-                intro.style.opacity = '0';
                 intro.style.transition = 'opacity 1s ease-out';
-                
+                intro.style.opacity = '0';
                 setTimeout(() => {
                     intro.style.display = 'none';
-                    mainContent.style.opacity = '1';
                     mainContent.style.transition = 'opacity 1s ease-in';
-                    document.querySelector('#main-content header').style.opacity = '1';
-                    document.querySelectorAll('#main-content .fade-in').forEach(el => el.style.opacity = '1');
+                    mainContent.style.opacity = '1';
                 }, 1000);
-            }, 4500);
+            }, 500); // Acortado para pruebas, puedes ajustarlo
         }
 
         function displayEventDates() {
             const eventDate = new Date(eventTimestamp * 1000);
-            const deadlineTimestamp = eventTimestamp - (3 * 24 * 60 * 60);
-            const deadlineDate = new Date(deadlineTimestamp * 1000);
-            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
-            const timeOptions = { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
-            
-            document.getElementById('event-date').innerText = new Intl.DateTimeFormat('es-VE', dateOptions).format(eventDate);
-            document.getElementById('event-time').innerText = new Intl.DateTimeFormat('es-VE', timeOptions).format(eventDate);
+            const deadlineDate = new Date(eventTimestamp * 1000 - (3 * 24 * 60 * 60 * 1000));
+            document.getElementById('event-date').innerText = new Intl.DateTimeFormat('es-VE', { weekday: 'long', day: 'numeric', month: 'long' }).format(eventDate);
+            document.getElementById('event-time').innerText = new Intl.DateTimeFormat('es-VE', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(eventDate);
             document.getElementById('deadline-date').innerText = new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'long', year: 'numeric' }).format(deadlineDate);
         }
         
-        function setupConfirmationModal() { /* ... Lógica del modal sin cambios ... */ }
+        // --- FUNCIÓN DEL MODAL RESTAURADA ---
+        function setupConfirmationModal() {
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.addEventListener('click', () => {
+                window.open('https://forms.gle/Wh9Kr8tidnLGCX5i7', '_blank');
+                
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 flex items-center justify-center z-50 p-4';
+                
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-black bg-opacity-70" id="modal-overlay"></div>
+                    <div class="card p-8 max-w-md w-full relative z-10 text-center" style="animation: fadeIn 0.3s ease-out;">
+                        <div class="flex justify-center mb-4">
+                            <svg class="w-16 h-16" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="11" fill="rgb(144, 238, 144)" opacity="0.2" />
+                                <path d="M9 12l2 2 4-4" stroke="rgb(144, 238, 144)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                                <circle cx="12" cy="12" r="10" stroke="rgb(144, 238, 144)" stroke-width="1.5" fill="none" />
+                            </svg>
+                        </div>
+                        <h3 class="text-3xl mb-4" style="color: #d4af37;">¡Asistencia Confirmada!</h3>
+                        <p class="mb-6 text-lg" style="color: var(--light);">Gracias por registrarte. Te esperamos.</p>
+                        <button class="minecraft-btn px-6 py-3 text-sm" id="close-btn">CERRAR</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
 
-        // --- FUNCIÓN DE MÚSICA CORREGIDA Y MEJORADA ---
+                const closeModal = () => {
+                    modal.remove();
+                };
+
+                document.getElementById('close-btn').addEventListener('click', closeModal);
+                document.getElementById('modal-overlay').addEventListener('click', closeModal);
+            });
+        }
+
+        // --- FUNCIÓN DE MÚSICA CORREGIDA ---
         function setupMusicControls() {
             const audio = document.getElementById('background-music');
             const toggleBtn = document.getElementById('music-toggle-btn');
             const iconMuted = document.getElementById('icon-muted');
             const iconUnmuted = document.getElementById('icon-unmuted');
-            
-            // Establecer un estado inicial. La música está "desactivada" por el usuario al principio.
-            let isMusicEnabled = false; 
 
-            // Intentamos la reproducción automática silenciada
-            audio.volume = 0.25;
-            audio.muted = true;
-            let playPromise = audio.play();
-
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // La reproducción automática fue bloqueada, no hay problema.
-                    // El botón funcionará para que el usuario la inicie manualmente.
-                    console.warn("La reproducción automática fue bloqueada por el navegador.");
+            const startAudio = () => {
+                audio.volume = 0.25;
+                audio.play().catch(error => {
+                    console.warn("El navegador bloqueó la reproducción automática. El audio comenzará con el primer clic.");
                 });
-            }
+            };
+            
+            // Intenta reproducir después de la primera interacción del usuario en cualquier parte
+            document.body.addEventListener('click', startAudio, { once: true });
 
-            toggleBtn.addEventListener('click', () => {
-                // Invertimos el estado deseado por el usuario
-                isMusicEnabled = !isMusicEnabled; 
+            toggleBtn.addEventListener('click', (event) => {
+                event.stopPropagation(); // Evita que el clic en el botón se propague al body
                 
-                if (isMusicEnabled) {
-                    // Si el usuario quiere música:
-                    audio.muted = false; // Quita el silencio
-                    if (audio.paused) {
-                        // Si el audio nunca empezó, dale a play ahora.
-                        audio.play();
-                    }
-                    iconMuted.classList.add('hidden');
-                    iconUnmuted.classList.remove('hidden');
-                } else {
-                    // Si el usuario NO quiere música:
-                    audio.muted = true; // Pon el silencio
+                // Simplemente alterna el estado de silencio
+                audio.muted = !audio.muted;
+
+                // Actualiza el icono basado en el nuevo estado
+                if (audio.muted) {
                     iconMuted.classList.remove('hidden');
                     iconUnmuted.classList.add('hidden');
+                } else {
+                    iconMuted.classList.add('hidden');
+                    iconUnmuted.classList.remove('hidden');
                 }
             });
         }
 
         window.addEventListener('load', () => {
-            // Se eliminó createElements() ya que no se usa y no estaba definido
+            createElements();
             playIntroSequence();
             displayEventDates();
             setupConfirmationModal();
